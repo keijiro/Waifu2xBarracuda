@@ -1,15 +1,22 @@
 #pragma kernel Preprocess
 
+#define CROP_SIZE 128
+#define PADDING 14
+#define INPUT_SIZE (CROP_SIZE + PADDING * 2)
+
 Texture2D _Texture;
 RWBuffer<float3> _Tensor;
 
-[numthreads(4, 4, 1)]
+[numthreads(INPUT_SIZE, 1, 1)]
 void Preprocess(uint3 id : SV_DispatchThreadID)
 {
-    float3 rgb = _Texture[id.xy].rgb;
-
-    uint offs = (id.y * 156 + id.x) * 3;
-    _Tensor[offs + 0] = rgb.r;
-    _Tensor[offs + 1] = rgb.g;
-    _Tensor[offs + 2] = rgb.b;
+    uint y = id.x;
+    uint offs = INPUT_SIZE * y * 3;
+    for (uint x = 0; x < INPUT_SIZE; x++)
+    {
+        float3 rgb = _Texture[uint2(x, y)].rgb;
+        _Tensor[offs++] = rgb.r;
+        _Tensor[offs++] = rgb.g;
+        _Tensor[offs++] = rgb.b;
+    }
 }

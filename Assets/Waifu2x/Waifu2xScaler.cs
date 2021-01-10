@@ -5,7 +5,9 @@ namespace Waifu2x {
 
 sealed public class Waifu2xScaler : System.IDisposable
 {
-    const int CropSize = 156;
+    const int CropSize = 128;
+    const int Padding = 14;
+    const int InputSize = CropSize + Padding * 2;
 
     IWorker _worker;
     ComputeShader _compute;
@@ -15,8 +17,7 @@ sealed public class Waifu2xScaler : System.IDisposable
     {
         _worker = ModelLoader.Load(model).CreateWorker();
         _compute = compute;
-        _preprocessed = 
-          new ComputeBuffer(CropSize * CropSize * 3, sizeof(float));
+        _preprocessed = new ComputeBuffer(InputSize * InputSize * 3, sizeof(float));
     }
 
     public void Dispose()
@@ -32,9 +33,9 @@ sealed public class Waifu2xScaler : System.IDisposable
     {
         _compute.SetTexture(0, "_Texture", source);
         _compute.SetBuffer(0, "_Tensor", _preprocessed);
-        _compute.Dispatch(0, 39, 39, 1);
+        _compute.Dispatch(0, 1, InputSize, 1);
 
-        using (var tensor = new Tensor(1, 156, 156, 3, _preprocessed))
+        using (var tensor = new Tensor(1, InputSize, InputSize, 3, _preprocessed))
             _worker.Execute(tensor);
 
         return _worker.PeekOutput().ToRenderTexture();
