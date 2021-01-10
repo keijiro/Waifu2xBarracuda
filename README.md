@@ -39,6 +39,11 @@ using (var scaler = new Waifu2xScaler(model, compute))
 }
 ```
 
+At the moment, this package only contains the anime style models. There are
+four different levels of the noise filter. Usually, the strongest one (noise3)
+gives smooth results, but you should decrease the strength if the image
+contains detailed texture elements.
+
 Acknowledgement
 ---------------
 
