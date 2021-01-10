@@ -33,8 +33,8 @@ How To Use
 ```csharp
 using (var scaler = new Waifu2xScaler(model, compute))
 {
-    texture_foo_2x = scaler.CreateScaledTexture(texture_foo);
-    texture_bar_2x = scaler.CreateScaledTexture(texture_bar);
+    texture_foo_x2 = scaler.CreateScaledTexture(texture_foo);
+    texture_bar_x2 = scaler.CreateScaledTexture(texture_bar);
     ...
 }
 ```
