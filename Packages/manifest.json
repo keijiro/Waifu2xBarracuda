@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "com.unity.modules.audio": "1.0.0",
+    "com.unity.barracuda": "1.2.1-preview"
+  }
+}
