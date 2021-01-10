@@ -24,4 +24,4 @@ sealed public class Waifu2xTest : MonoBehaviour
     #endregion
 }
 
-} // namespace NNCam
+} // namespace Waifu2x

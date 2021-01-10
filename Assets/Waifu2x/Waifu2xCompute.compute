@@ -1,22 +1,40 @@
 #pragma kernel Preprocess
+#pragma kernel Postprocess
 
-#define CROP_SIZE 128
+#define TILE_SIZE 128
 #define PADDING 14
-#define INPUT_SIZE (CROP_SIZE + PADDING * 2)
+#define INPUT_TENSOR_SIZE (TILE_SIZE + PADDING * 2)
 
-Texture2D _Texture;
-RWBuffer<float3> _Tensor;
+Texture2D<float3> _SourceTexture;
+RWBuffer<float3> _InputTensor;
+uint2 _InputOffset;
 
-[numthreads(INPUT_SIZE, 1, 1)]
+[numthreads(INPUT_TENSOR_SIZE, 1, 1)]
 void Preprocess(uint3 id : SV_DispatchThreadID)
 {
-    uint y = id.x;
-    uint offs = INPUT_SIZE * y * 3;
-    for (uint x = 0; x < INPUT_SIZE; x++)
+    const uint y = id.x;
+    uint offs = INPUT_TENSOR_SIZE * (INPUT_TENSOR_SIZE - 1 - y) * 3;
+    for (uint x = 0; x < INPUT_TENSOR_SIZE; x++)
     {
-        float3 rgb = _Texture[uint2(x, y)].rgb;
-        _Tensor[offs++] = rgb.r;
-        _Tensor[offs++] = rgb.g;
-        _Tensor[offs++] = rgb.b;
+        float3 rgb = _SourceTexture[uint2(x, y) + _InputOffset - PADDING];
+        _InputTensor[offs++] = rgb.r;
+        _InputTensor[offs++] = rgb.g;
+        _InputTensor[offs++] = rgb.b;
+    }
+}
+
+Texture2D<float3> _OutputTensor;
+RWTexture2D<float3> _OutputTexture;
+uint2 _OutputOffset;
+
+[numthreads(TILE_SIZE * 2, 1, 1)]
+void Postprocess(uint3 id : SV_DispatchThreadID)
+{
+    const uint y = id.x;
+    for (uint x = 0; x < TILE_SIZE * 2; x++)
+    {
+        uint2 tile_pos = uint2(x + PADDING, y + PADDING);
+        uint2 out_pos = _OutputOffset + uint2(x, y);
+        _OutputTexture[out_pos] = _OutputTensor[tile_pos];
     }
 }
