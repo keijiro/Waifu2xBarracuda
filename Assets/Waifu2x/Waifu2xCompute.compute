@@ -24,7 +24,7 @@ void Preprocess(uint3 id : SV_DispatchThreadID)
 }
 
 Texture2D<float3> _OutputTensor;
-RWTexture2D<float3> _OutputTexture;
+RWTexture2D<float4> _OutputTexture;
 uint2 _OutputOffset;
 
 [numthreads(TILE_SIZE * 2, 1, 1)]
@@ -35,6 +35,6 @@ void Postprocess(uint3 id : SV_DispatchThreadID)
     {
         uint2 tile_pos = uint2(x + PADDING, y + PADDING);
         uint2 out_pos = _OutputOffset + uint2(x, y);
-        _OutputTexture[out_pos] = _OutputTensor[tile_pos];
+        _OutputTexture[out_pos] = float4(_OutputTensor[tile_pos], 1);
     }
 }
