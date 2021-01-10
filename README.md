@@ -2,7 +2,7 @@ Waifu2xBarracuda
 ================
 
 **Waifu2xBarracuda** is a [Waifu2x] implementation with the Unity [Barracuda]
-NN inference library.
+neural network inference library.
 
 Comparisons
 -----------
@@ -39,13 +39,13 @@ using (var scaler = new Waifu2xScaler(model, compute))
 }
 ```
 
-At the moment, this package only contains the anime style models. There are
-four different levels of the noise filter. Usually, the strongest one (noise3)
-gives smooth results, but you should decrease the strength if the image
-contains detailed texture elements.
+At the moment, this package only contains the `upconv_7` anime style models.
+There are four models for different noise filter levels. Usually, the strongest
+one (`noise3`) gives good results, but you should decrease the strength if the
+image contains detailed texture elements.
 
-Acknowledgement
----------------
+Acknowledgements
+----------------
 
 ### ONNX files
 
