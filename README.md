@@ -4,8 +4,22 @@ Waifu2xBarracuda
 **Waifu2xBarracuda** is a [Waifu2x] implementation with the Unity [Barracuda]
 NN inference library.
 
+Comparisons
+-----------
+
+- Left: Bilinear filter only
+- Right: 200% upscaling with Waifu2x + Bilinear filter
+
 [Waifu2x]: https://github.com/nagadomi/waifu2x
 [Barracuda]: https://docs.unity3d.com/Packages/com.unity.barracuda@latest
+
+![screenshot](https://i.imgur.com/Fo7B9aG.png)
+
+![screenshot](https://i.imgur.com/DlCMLzu.png)
+
+![screenshot](https://i.imgur.com/cp0k45a.png)
+
+![screenshot](https://i.imgur.com/6sewded.png)
 
 Acknowledgement
 ---------------
