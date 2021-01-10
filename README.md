@@ -21,6 +21,24 @@ Comparisons
 
 ![screenshot](https://i.imgur.com/6sewded.png)
 
+How To Use
+----------
+
+- Create a `Waifu2x.Waifu2xScaler` object with specifying a Waifu2x ONNX model
+  and the pre/post-processing compute shader.
+- Call `CreateScaledTexture` with a source texture. It returns a `RenderTexture`
+  object with 200% size.
+- Dispose the `Waifu2x.Waifu2xScaler` object when it's no longer needed.
+
+```csharp
+using (var scaler = new Waifu2xScaler(model, compute))
+{
+    texture_foo_2x = scaler.CreateScaledTexture(texture_foo);
+    texture_bar_2x = scaler.CreateScaledTexture(texture_bar);
+    ...
+}
+```
+
 Acknowledgement
 ---------------
 
