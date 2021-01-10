@@ -9,7 +9,6 @@ sealed public class Waifu2xTest : MonoBehaviour
 
     [SerializeField] Unity.Barracuda.NNModel _model = null;
     [SerializeField] ComputeShader _preprocessor = null;
-    [SerializeField] Shader _visualizerShader = null;
     [SerializeField] Texture2D _testImage = null;
 
     #endregion
@@ -18,7 +17,6 @@ sealed public class Waifu2xTest : MonoBehaviour
 
     ComputeBuffer _preprocessed;
     RenderTexture _postprocessed;
-    Material _visualizer;
     IWorker _worker;
 
     #endregion
@@ -28,7 +26,6 @@ sealed public class Waifu2xTest : MonoBehaviour
     void Start()
     {
         _preprocessed = new ComputeBuffer(156 * 156 * 3, sizeof(float));
-        _visualizer = new Material(_visualizerShader);
         _worker = ModelLoader.Load(_model).CreateWorker();
 
         // Preprocessing for Waifu2x
@@ -58,7 +55,6 @@ sealed public class Waifu2xTest : MonoBehaviour
     void OnDestroy()
     {
         if (_postprocessed != null) Destroy(_postprocessed);
-        if (_visualizer != null) Destroy(_visualizer);
     }
 
     #endregion

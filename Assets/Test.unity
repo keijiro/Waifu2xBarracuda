@@ -156,7 +156,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _model: {fileID: 5022602860645237092, guid: 54c7e4692f76c9a449c6c6234316910e, type: 3}
   _preprocessor: {fileID: 7200000, guid: 7b29b77e06980a3438fa1b92e9596dc9, type: 3}
-  _visualizerShader: {fileID: 4800000, guid: bd3efc2afca647e408f6f4d9b2d43685, type: 3}
   _testImage: {fileID: 2800000, guid: 1a615e1cf2b54dd4684ced01ff7b4c32, type: 3}
 --- !u!23 &548603919
 MeshRenderer:
