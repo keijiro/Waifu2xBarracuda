@@ -6,7 +6,7 @@
 #define INPUT_TENSOR_SIZE (TILE_SIZE + PADDING * 2)
 
 Texture2D<float3> _SourceTexture;
-RWBuffer<float3> _InputTensor;
+RWBuffer<float> _InputTensor;
 uint2 _InputOffset;
 
 [numthreads(INPUT_TENSOR_SIZE, 1, 1)]
