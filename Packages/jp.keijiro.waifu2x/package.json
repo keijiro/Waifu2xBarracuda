@@ -1,0 +1,13 @@
+{
+  "author": "Keijiro Takahashi",
+  "dependencies": { "com.unity.barracuda": "2.1.0-preview" },
+  "description": "Convolutional neural network based super resolution filter specialized for illustration and anime.",
+  "displayName": "Waifu2x",
+  "keywords": [ "unity" ],
+  "license": "MIT",
+  "name": "jp.keijiro.waifu2x",
+  "repository": "github:keijiro/Waifu2xBarracuda",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "version": "1.0.0"
+}
