@@ -7,10 +7,10 @@ sealed public class Waifu2xScaler : System.IDisposable
 {
     #region Public methods
 
-    public Waifu2xScaler(NNModel model, ComputeShader compute)
+    public Waifu2xScaler(ResourceSet resources)
     {
-        _worker = ModelLoader.Load(model).CreateWorker();
-        _compute = compute;
+        _resources = resources;
+        _worker = ModelLoader.Load(resources.model).CreateWorker();
     }
 
     public void Dispose()
@@ -34,10 +34,11 @@ sealed public class Waifu2xScaler : System.IDisposable
         var outTensor = RenderTexture.GetTemporary(outTensorSize, outTensorSize, 0);
 
         // Compute initialization
-        _compute.SetTexture(0, "_SourceTexture", source);
-        _compute.SetBuffer(0, "_InputTensor", inTensor);
-        _compute.SetTexture(1, "_OutputTensor", outTensor);
-        _compute.SetTexture(1, "_OutputTexture", output);
+        var cs = _resources.compute;
+        cs.SetTexture(0, "_SourceTexture", source);
+        cs.SetBuffer(0, "_InputTensor", inTensor);
+        cs.SetTexture(1, "_OutputTensor", outTensor);
+        cs.SetTexture(1, "_OutputTexture", output);
 
         // Invoke Waifu2x per tile
         for (var y = 0; y < source.height; y += TileSize)
@@ -45,8 +46,8 @@ sealed public class Waifu2xScaler : System.IDisposable
             for (var x = 0; x < source.width; x += TileSize)
             {
                 // Preprocessing
-                _compute.SetInts("_InputOffset", x, y);
-                _compute.Dispatch(0, 1, inTensorSize, 1);
+                cs.SetInts("_InputOffset", x, y);
+                cs.Dispatch(0, 1, inTensorSize, 1);
 
                 // Waifu2x
                 using (var tensor = new Tensor(1, inTensorSize, inTensorSize, 3, inTensor))
@@ -54,8 +55,8 @@ sealed public class Waifu2xScaler : System.IDisposable
 
                 // Postprocessing
                 _worker.PeekOutput().ToRenderTexture(outTensor);
-                _compute.SetInts("_OutputOffset", x * 2, y * 2);
-                _compute.Dispatch(1, 1, TileSize * 2, 1);
+                cs.SetInts("_OutputOffset", x * 2, y * 2);
+                cs.Dispatch(1, 1, TileSize * 2, 1);
             }
         }
 
@@ -74,22 +75,10 @@ sealed public class Waifu2xScaler : System.IDisposable
 
     #region Internal objects
 
+    ResourceSet _resources;
     IWorker _worker;
-    ComputeShader _compute;
 
     #endregion
-}
-
-static class ComputeShaderExtensions
-{
-    static int[] i2 = new int[2];
-
-    public static void SetInts
-      (this ComputeShader cs, string name, int x, int y)
-    {
-        i2[0] = x; i2[1] = y;
-        cs.SetInts(name, i2);
-    }
 }
 
 } // namespace Waifu2x
