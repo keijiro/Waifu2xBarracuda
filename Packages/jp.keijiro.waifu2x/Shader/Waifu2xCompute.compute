@@ -1,0 +1,41 @@
+#pragma kernel Preprocess
+#pragma kernel Postprocess
+
+#define TILE_SIZE 128
+#define PADDING 14
+#define TENSOR_SIZE (TILE_SIZE + PADDING * 2)
+
+// Common parameter
+uint2 Offset;
+
+// Preprocessing
+Texture2D<float4> Source;
+uint2 SourceSize;
+RWStructuredBuffer<float> NNInput;
+
+[numthreads(8, 8, 1)]
+void Preprocess(uint2 id : SV_DispatchThreadID)
+{
+    if (!all(id < TENSOR_SIZE)) return;
+
+    uint2 src_idx = min(max(id + Offset, PADDING) - PADDING, SourceSize - 1);
+    float3 rgb = Source[src_idx].rgb;
+
+    uint out_idx = (TENSOR_SIZE * (TENSOR_SIZE - 1 - id.y) + id.x) * 3;
+
+    NNInput[out_idx++] = rgb.r;
+    NNInput[out_idx++] = rgb.g;
+    NNInput[out_idx++] = rgb.b;
+}
+
+// Postprocessing
+Texture2D<float3> NNOutput;
+RWTexture2D<float4> Output;
+
+[numthreads(8, 8, 1)]
+void Postprocess(uint2 id : SV_DispatchThreadID)
+{
+    uint2 tile_pos = uint2(id.x + PADDING, id.y + PADDING);
+    uint2 out_pos = Offset + uint2(id.x, id.y);
+    Output[out_pos] = float4(NNOutput[tile_pos], 1);
+}

@@ -35,10 +35,11 @@ sealed public class Waifu2xScaler : System.IDisposable
 
         // Compute initialization
         var cs = _resources.compute;
-        cs.SetTexture(0, "_SourceTexture", source);
-        cs.SetBuffer(0, "_InputTensor", inTensor);
-        cs.SetTexture(1, "_OutputTensor", outTensor);
-        cs.SetTexture(1, "_OutputTexture", output);
+        cs.SetTexture(0, "Source", source);
+        cs.SetInts("SourceSize", source.width, source.height);
+        cs.SetBuffer(0, "NNInput", inTensor);
+        cs.SetTexture(1, "NNOutput", outTensor);
+        cs.SetTexture(1, "Output", output);
 
         // Invoke Waifu2x per tile
         for (var y = 0; y < source.height; y += TileSize)
@@ -46,8 +47,8 @@ sealed public class Waifu2xScaler : System.IDisposable
             for (var x = 0; x < source.width; x += TileSize)
             {
                 // Preprocessing
-                cs.SetInts("_InputOffset", x, y);
-                cs.Dispatch(0, 1, inTensorSize, 1);
+                cs.SetInts("Offset", x, y);
+                cs.DispatchThreads(0, inTensorSize, inTensorSize, 1);
 
                 // Waifu2x
                 using (var tensor = new Tensor(1, inTensorSize, inTensorSize, 3, inTensor))
@@ -55,8 +56,8 @@ sealed public class Waifu2xScaler : System.IDisposable
 
                 // Postprocessing
                 _worker.PeekOutput().ToRenderTexture(outTensor);
-                cs.SetInts("_OutputOffset", x * 2, y * 2);
-                cs.Dispatch(1, 1, TileSize * 2, 1);
+                cs.SetInts("Offset", x * 2, y * 2);
+                cs.DispatchThreads(1, TileSize * 2, TileSize * 2, 1);
             }
         }
 
